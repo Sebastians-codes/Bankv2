@@ -2,10 +2,10 @@ namespace BankStorage;
 
 public class Account
 {
-    public int AccountNumber { get; init; }
-    public string? HolderFirstName { get; init; }
-    public string? HolderLastName { get; init; }
-    public int PinCode { get; init; }
+    public int AccountNumber { get; }
+    public string? HolderFirstName { get; }
+    public string? HolderLastName { get; }
+    public int PinCode { get; }
     private string _path;
     private decimal _balance;
     private List<decimal> _movements = [];
@@ -24,14 +24,27 @@ public class Account
     public void GetBalance()
     {
         InitializeBalance();
-        Console.WriteLine(_balance);
+        Console.WriteLine($"Your account balance is {_balance}$");
     }
 
     public void ShowMovementHistory()
     {
-        foreach (var movement in _movements)
+        var strs = new string[_movements.Count];
+        decimal sum = 0;
+
+        for (int i = 0; i < _movements.Count; i++)
         {
-            Console.WriteLine($"{movement} {(_balance -= movement)}");
+            sum += _movements[i];
+            strs[i] = $"{(_movements[i] < 0 ? "Withdrew " : "Deposited")} {Math.Abs(_movements[i])}$      Balance:{sum}$";
+        }
+
+        strs = strs.Reverse().ToArray();
+
+        GetBalance();
+
+        foreach (var str in strs)
+        {
+            Console.WriteLine(str);
         }
     }
 
