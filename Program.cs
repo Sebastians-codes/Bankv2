@@ -14,3 +14,5 @@ Console.WriteLine("account0");
 account.GetBalance();
 Console.WriteLine("account1");
 account1.GetBalance();
+
+account.ShowMovementHistory();

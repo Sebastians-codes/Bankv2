@@ -16,7 +16,7 @@ public class Account
         HolderFirstName = holderFirstName;
         HolderLastName = holderLastName;
         PinCode = pinCode;
-        _path = $"AccountBalances/{AccountNumber}.csv";
+        _path = $"AccountBalances/{AccountNumber}.txt";
 
         InitializeBalance();
     }
@@ -27,9 +27,17 @@ public class Account
         Console.WriteLine(_balance);
     }
 
+    public void ShowMovementHistory()
+    {
+        foreach (var movement in _movements)
+        {
+            Console.WriteLine($"{movement} {(_balance -= movement)}");
+        }
+    }
+
     public void MakeMovement(decimal movement, bool deposit)
     {
-        if (_balance < movement && movement < 0)
+        if (_balance < movement && !deposit)
         {
             Console.WriteLine("Not enough money too withdrawl that amount");
             return;
@@ -59,7 +67,7 @@ public class Account
             return;
         }
 
-        string transferPath = $"AccountBalances/{accountNumber}.csv";
+        string transferPath = $"AccountBalances/{accountNumber}.txt";
         if (movement > _balance)
         {
             Console.WriteLine("You do not have enough money.");
