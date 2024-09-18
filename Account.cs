@@ -27,7 +27,7 @@ public class Account
         Console.WriteLine(_balance);
     }
 
-    public void MakeMovement(decimal movement)
+    public void MakeMovement(decimal movement, bool deposit)
     {
         if (_balance < movement && movement < 0)
         {
@@ -35,11 +35,20 @@ public class Account
             return;
         }
 
-        _balance += movement;
+        if (!deposit)
+        {
+            Console.WriteLine($"You withdrew {movement}$.");
+            _balance -= movement;
+        }
+        else
+        {
+            Console.WriteLine($"You deposited {movement}$.");
+            _balance += movement;
+        }
 
-        _movements.Add(movement);
+        _movements.Add((deposit ? movement : decimal.Parse($"-{movement}")));
 
-        File.AppendAllText(_path, $",{movement}");
+        File.AppendAllText(_path, (deposit ? $",{movement}" : $",-{movement}"));
     }
 
     public void SendMoney(int accountNumber, decimal movement)
