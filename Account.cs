@@ -101,6 +101,9 @@ public class Account
         File.AppendAllText(_path, $",-{movement}");
     }
 
+    public string ToCsv() =>
+        $"{AccountNumber},{HolderFirstName},{HolderLastName},{PinCode}";
+
     private void InitializeBalance()
     {
         if (!File.Exists(_path))
