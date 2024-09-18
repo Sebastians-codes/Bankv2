@@ -29,7 +29,7 @@ public class Account
 
     public void MakeMovement(decimal movement)
     {
-        if (_balance < movement)
+        if (_balance < movement && movement < 0)
         {
             Console.WriteLine("Not enough money too withdrawl that amount");
             return;
