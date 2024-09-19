@@ -21,64 +21,47 @@ public class Customer
         InitializeDatabase();
     }
 
-    public bool ChooseAccount()
+    public bool GetAccount(int customerNumber, int accountNumber)
     {
-        InitializeDatabase();
+        var accounts = GetAccounts();
 
-
-        if (_accounts.Length == 0)
+        foreach (var account in accounts)
         {
-            do
+            if (account == accountNumber.ToString())
             {
-                Console.WriteLine("You do not have any accounts do you want to create one? y/n");
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (char.ToLowerInvariant(key.KeyChar) == 'y')
-                {
-                    CurrentAccount = new Account(CustomerNumber, 1);
-                    Console.Clear();
-                    return true;
-                }
-                if (char.ToLowerInvariant(key.KeyChar) == 'n')
-                {
-                    Console.Clear();
-                    return false;
-                }
-                Console.Clear();
-                Console.WriteLine("Invalid input, try again.");
-
-            } while (true);
+                CurrentAccount = new Account(customerNumber, accountNumber);
+                return true;
+            }
         }
 
-        Console.WriteLine("select the account you want too use.");
-        Console.WriteLine("to make new one enter a number that you currently do not have. max is 10 accounts.");
-        int max = _accounts.Length + 1;
-        int choice;
+        return false;
+    }
 
-        do
+    public bool CreateNewAccount(int customerNumber, int accountNumber)
+    {
+        var accounts = GetAccounts();
+
+        foreach (var account in accounts)
         {
-            PrintAccounts();
-            ConsoleKeyInfo key = Console.ReadKey(true);
-
-            if (int.TryParse(key.KeyChar.ToString(), out choice) && choice > 0 && choice < 10)
+            if (account == accountNumber.ToString())
             {
-                break;
+                return false;
             }
+        }
 
-            Console.Clear();
-            Console.WriteLine("Invalid input, try agian.");
+        CurrentAccount = new Account(customerNumber, accountNumber);
 
-        } while (true);
-        Console.Clear();
-        CurrentAccount = new Account(CustomerNumber, choice);
         return true;
     }
 
-    public string[] ShowMovementHistory()
+    public string[] GetMovementHistory()
     {
-        var strs = new string[CurrentAccount.Movements.Count];
+        var strs = new string[CurrentAccount.Movements.Count + 1];
         decimal sum = 0;
 
-        for (int i = 0; i < CurrentAccount.Movements.Count; i++)
+        strs[0] = $"Your current balance is {CurrentAccount.Balance}$";
+
+        for (int i = 1; i < CurrentAccount.Movements.Count; i++)
         {
             decimal currentMovement = CurrentAccount.Movements[i];
             sum += currentMovement;
@@ -87,17 +70,19 @@ public class Customer
 
         strs = strs.Reverse().ToArray();
 
-        GetBalance();
-
         return strs;
     }
 
-    private void PrintAccounts()
+    private string[] GetAccounts()
     {
+        string[] accounts = new string[_accounts.Length];
+
         for (int i = 0; i < _accounts.Length; i++)
         {
-            Console.WriteLine($"Account {_accounts[i].Split(".")[0].Split("/")[^1]}");
+            accounts[i] = $"Account {_accounts[i].Split(".")[0].Split("/")[^1]}";
         }
+
+        return accounts;
     }
 
     private void InitializeDatabase()

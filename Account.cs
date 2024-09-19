@@ -15,9 +15,6 @@ public class Account
         InitializeBalance();
     }
 
-    public void GetBalance() =>
-        Console.WriteLine($"Your account balance is {Balance}$");
-
     public void Deposit(decimal movement)
     {
         Balance += movement;
