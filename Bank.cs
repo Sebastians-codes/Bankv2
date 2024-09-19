@@ -389,13 +389,20 @@ public class Bank
             do
             {
                 pinCode = GetPin("Enter a pincode for your account");
-                Console.Clear();
-                secondAttempt = GetPin("Enter the code again to confirm");
+                do
+                {
+                    Console.Clear();
+                    secondAttempt = GetPin("Enter the code again to confirm");
+
+                    break;
+
+                } while (true);
 
                 if (pinCode == secondAttempt)
                 {
                     break;
                 }
+
                 Console.Clear();
                 Console.WriteLine("codes did not match try again.");
 
@@ -481,6 +488,7 @@ public class Bank
     {
         do
         {
+            Console.Clear();
             Console.Write(message);
             string? input = Console.ReadLine();
 
@@ -509,19 +517,6 @@ public class Bank
 
         do
         {
-            if (chars.Count() == maxLength)
-            {
-                Console.Clear();
-                Console.WriteLine($"You have reached the maximum length of {maxLength}.");
-                Console.WriteLine("Press Enter too Continue.");
-                key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Enter)
-                {
-                    break;
-                }
-                continue;
-            }
-
             Console.Write($"{message}, between {minLength} and {maxLength} long. -> ");
 
             if (chars.Count() > 0)
@@ -538,16 +533,29 @@ public class Bank
             {
                 break;
             }
+            else if (key.Key == ConsoleKey.Backspace && chars.Count > 0)
+            {
+                chars.RemoveAt(chars.LastIndexOf(chars.Last()));
+                Console.Clear();
+                continue;
+            }
 
-            if (int.TryParse(key.KeyChar.ToString(), out int num) && num < 10 && num > 0)
+            if (int.TryParse(key.KeyChar.ToString(), out int num) && num < 10 && num > 0 && chars.Count < maxLength)
             {
                 chars.Add(key.KeyChar);
                 Console.Clear();
                 continue;
             }
-
-            Console.Clear();
-            Console.WriteLine("Not a valid integer try again.");
+            else if (chars.Count == maxLength)
+            {
+                Console.Clear();
+                Console.WriteLine("You have reached the maximum amount of numbers.");
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("Not a valid integer try again.");
+            }
 
         } while (true);
 
