@@ -1,4 +1,4 @@
-namespace BankStorageg;
+namespace BankStorage;
 
 public class UserInputs
 {
@@ -60,5 +60,57 @@ public class UserInputs
             }
 
         } while (true);
+    }
+
+    public int GetPin(string message, int minLength = 4, int maxLength = 8)
+    {
+        ConsoleKeyInfo key;
+        List<char> chars = [];
+
+        do
+        {
+            if (chars.Count() == maxLength)
+            {
+                Console.Clear();
+                Console.WriteLine($"You have reached the maximum length of {maxLength}.");
+                Console.WriteLine("Press Enter too Continue.");
+                key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+                continue;
+            }
+
+            Console.Write($"{message}, between {minLength} and {maxLength} long. -> ");
+
+            if (chars.Count() > 0)
+            {
+                foreach (char chr in chars)
+                {
+                    Console.Write("*");
+                }
+            }
+
+            key = Console.ReadKey(true);
+
+            if (key.Key == ConsoleKey.Enter && chars.Count > minLength - 1)
+            {
+                break;
+            }
+
+            if (int.TryParse(key.KeyChar.ToString(), out int num) && num < 10 && num > 0)
+            {
+                chars.Add(key.KeyChar);
+                Console.Clear();
+                continue;
+            }
+
+            Console.Clear();
+            Console.WriteLine("Not a valid integer try again.");
+
+        } while (true);
+
+        return int.Parse(string.Join("", chars));
     }
 }
