@@ -80,6 +80,7 @@ public class Customer
         if (!Directory.Exists(_customerPath))
         {
             Directory.CreateDirectory(_customerPath);
+            _accounts = [];
             return;
         }
 
