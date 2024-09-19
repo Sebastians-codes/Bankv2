@@ -3,91 +3,41 @@ namespace BankStorage;
 public class Account
 {
     public int AccountNumber { get; }
+    public decimal Balance { get; private set; }
+    public List<decimal> Movements { get; private set; } = [];
     private string _path;
-    private decimal _balance;
-    private List<decimal> _movements = [];
-    private int _customerNumber;
 
     public Account(int CustomerNumber, int accountNumber)
     {
         AccountNumber = accountNumber;
-        _customerNumber = CustomerNumber;
         _path = $"Accounts/{CustomerNumber}/{AccountNumber}.txt";
 
         InitializeBalance();
     }
 
     public void GetBalance() =>
-        Console.WriteLine($"Your account balance is {_balance}$");
+        Console.WriteLine($"Your account balance is {Balance}$");
 
-    public void ShowMovementHistory()
+    public void Deposit(decimal movement)
     {
-        var strs = new string[_movements.Count];
-        decimal sum = 0;
-
-        for (int i = 0; i < _movements.Count; i++)
-        {
-            sum += _movements[i];
-            strs[i] = $"{(_movements[i] < 0 ? "Withdrew " : "Deposited")} {Math.Abs(_movements[i])}$      Balance:{sum}$";
-        }
-
-        strs = strs.Reverse().ToArray();
-
-        GetBalance();
-
-        foreach (var str in strs)
-        {
-            Console.WriteLine(str);
-        }
+        Balance += movement;
+        Movements.Add(movement);
+        File.AppendAllText(_path, $",{movement}");
     }
 
-    public void MakeMovement(decimal movement, bool deposit)
+    public void Withdraw(decimal movement)
     {
-        if (_balance < movement && !deposit)
-        {
-            Console.WriteLine("Not enough money too withdrawl that amount");
-            return;
-        }
-
-        if (!deposit)
-        {
-            Console.WriteLine($"You withdrew {movement}$.");
-            _balance -= movement;
-        }
-        else
-        {
-            Console.WriteLine($"You deposited {movement}$.");
-            _balance += movement;
-        }
-
-        _movements.Add((deposit ? movement : decimal.Parse($"-{movement}")));
-
-        File.AppendAllText(_path, (deposit ? $",{movement}" : $",-{movement}"));
+        Balance -= movement;
+        Movements.Add(decimal.Parse($"-{movement}"));
+        File.AppendAllText(_path, $",-{movement}");
     }
 
     public void SendMoney(int customerNumber, int accountNumber, decimal movement)
     {
-        if (accountNumber == AccountNumber && customerNumber == _customerNumber)
-        {
-            Console.WriteLine("You can not send money to yourself...");
-            return;
-        }
-
         string transferPath = $"Accounts/{customerNumber}/{accountNumber}.txt";
-        if (movement > _balance)
-        {
-            Console.WriteLine("You do not have enough money.");
-            return;
-        }
 
-        if (!File.Exists(transferPath))
-        {
-            Console.WriteLine($"There is no account with the account number {accountNumber}.");
-            return;
-        }
-
-        _balance -= movement;
-        _movements.Add(decimal.Parse($"-{movement}"));
+        Balance -= movement;
+        Movements.Add(decimal.Parse($"-{movement}"));
 
         File.AppendAllText(transferPath, $",{movement}");
 
@@ -102,7 +52,7 @@ public class Account
 
         if (!File.Exists(_path))
         {
-            File.AppendAllText(_path, $"{_balance}");
+            File.AppendAllText(_path, $"{Balance}");
             return;
         }
 
@@ -113,13 +63,13 @@ public class Account
             return;
         }
 
-        _movements.Clear();
+        Movements.Clear();
 
         for (int i = 0; i < movements.Length; i++)
         {
-            _movements.Add(decimal.Parse(movements[i]));
+            Movements.Add(decimal.Parse(movements[i]));
         }
 
-        _balance = _movements.Sum();
+        Balance = Movements.Sum();
     }
 }

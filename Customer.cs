@@ -73,6 +73,25 @@ public class Customer
         return true;
     }
 
+    public string[] ShowMovementHistory()
+    {
+        var strs = new string[CurrentAccount.Movements.Count];
+        decimal sum = 0;
+
+        for (int i = 0; i < CurrentAccount.Movements.Count; i++)
+        {
+            decimal currentMovement = CurrentAccount.Movements[i];
+            sum += currentMovement;
+            strs[i] = $"{(currentMovement < 0 ? "Withdrew " : "Deposited")} {Math.Abs(currentMovement)}$      Balance:{sum}$";
+        }
+
+        strs = strs.Reverse().ToArray();
+
+        GetBalance();
+
+        return strs;
+    }
+
     private void PrintAccounts()
     {
         for (int i = 0; i < _accounts.Length; i++)
