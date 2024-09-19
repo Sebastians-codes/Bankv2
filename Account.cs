@@ -3,27 +3,20 @@ namespace BankStorage;
 public class Account
 {
     public int AccountNumber { get; }
-    public string? HolderFirstName { get; }
-    public string? HolderLastName { get; }
-    public int PinCode { get; }
     private string _path;
     private decimal _balance;
     private List<decimal> _movements = [];
 
-    public Account(int accountNumber, string holderFirstName, string holderLastName, int pinCode)
+    public Account(int CustomerNumber, int accountNumber)
     {
         AccountNumber = accountNumber;
-        HolderFirstName = holderFirstName;
-        HolderLastName = holderLastName;
-        PinCode = pinCode;
-        _path = $"AccountBalances/{AccountNumber}.txt";
+        _path = $"Accounts/{CustomerNumber}/{AccountNumber}.txt";
 
         InitializeBalance();
     }
 
     public void GetBalance()
     {
-        InitializeBalance();
         Console.WriteLine($"Your account balance is {_balance}$");
     }
 
@@ -102,7 +95,7 @@ public class Account
     }
 
     public string ToCsv() =>
-        $"{AccountNumber},{HolderFirstName},{HolderLastName},{PinCode}";
+        $"{AccountNumber}";
 
     private void InitializeBalance()
     {
