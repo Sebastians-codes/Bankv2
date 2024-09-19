@@ -5,7 +5,6 @@ public class Bank
     private readonly string _path = "Accounts/credentials.csv";
     private readonly UserInputs _inputs;
     private List<string[]> _accounts = [];
-
     private Customer _currentCustomer;
 
     public Bank(UserInputs inputs)
