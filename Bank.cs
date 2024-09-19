@@ -50,25 +50,16 @@ public class Bank
             switch (input)
             {
                 case 1:
-                    _currentCustomer.CurrentAccount.GetBalance();
+                    PrintBalance();
                     break;
                 case 2:
-                    _currentCustomer.CurrentAccount.ShowMovementHistory();
+                    PrintMovementHistory();
                     break;
                 case 3:
-                    movement = _inputs.GetDecimal(
-                        "Enter the amount you want too deposit -> ",
-                        "Invalid input, try again.",
-                        0m,
-                        decimal.MaxValue);
-                    _currentCustomer.CurrentAccount.MakeMovement(movement, true);
+                    MakeDeposit();
                     break;
                 case 4:
-                    movement = _inputs.GetDecimal(
-                        "Enter the amount you want too withdraw -> ",
-                        "Invalid input, try again.",
-                        0m,
-                        decimal.MaxValue);
+
                     _currentCustomer.CurrentAccount.MakeMovement(movement, false);
                     break;
                 case 5:
@@ -210,6 +201,53 @@ public class Bank
             } while (true);
 
         } while (true);
+    }
+
+    private void MakeWithdrawl()
+    {
+        do
+        {
+            var movement = _inputs.GetDecimal(
+                            "Enter the amount you want too withdraw -> ",
+                            "Invalid input, try again.",
+                            0m,
+                            decimal.MaxValue);
+
+            if (movement < _currentCustomer.CurrentAccount.Balance)
+            {
+                _currentCustomer.CurrentAccount.Withdraw(movement);
+                Console.WriteLine($"You withdrew {movement}$.");
+            }
+            Console.Clear();
+            Console.WriteLine("You do not have enough money to withdraw that amount");
+
+        } while (true);
+    }
+
+    private void MakeDeposit()
+    {
+        decimal movement = _inputs.GetDecimal(
+                        "Enter the amount you want too deposit -> ",
+                        "Invalid input, try again.",
+                        0m,
+                        decimal.MaxValue);
+
+        _currentCustomer.CurrentAccount.Deposit(movement);
+    }
+
+    private void PrintMovementHistory()
+    {
+        string[] movements = _currentCustomer.GetMovementHistory();
+        foreach (string movement in movements)
+        {
+            Console.WriteLine(movement);
+        }
+    }
+
+    private void PrintBalance()
+    {
+        decimal balance = _currentCustomer.CurrentAccount.Balance;
+        Console.WriteLine($"Your Current Balance is {balance}$.");
     }
 
     private void PrintMenu()

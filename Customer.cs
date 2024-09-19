@@ -7,7 +7,7 @@ public class Customer
     public string? HolderLastName { get; }
     public int PinCode { get; }
     public Account CurrentAccount { get; private set; }
-    private string[] _accounts;
+    private List<string> _accounts;
     private string? _customerPath;
 
     public Customer(int customerNumber, string holderFirstName, string holderLastName, int pinCode)
@@ -30,6 +30,7 @@ public class Customer
             if (account == accountNumber.ToString())
             {
                 CurrentAccount = new Account(customerNumber, accountNumber);
+
                 return true;
             }
         }
@@ -50,6 +51,8 @@ public class Customer
         }
 
         CurrentAccount = new Account(customerNumber, accountNumber);
+
+        _accounts.Add($"{accountNumber}");
 
         return true;
     }
@@ -75,9 +78,9 @@ public class Customer
 
     private string[] GetAccounts()
     {
-        string[] accounts = new string[_accounts.Length];
+        string[] accounts = new string[_accounts.Count];
 
-        for (int i = 0; i < _accounts.Length; i++)
+        for (int i = 0; i < _accounts.Count; i++)
         {
             accounts[i] = $"Account {_accounts[i].Split(".")[0].Split("/")[^1]}";
         }
@@ -93,7 +96,7 @@ public class Customer
             return;
         }
 
-        _accounts = Directory.GetFiles(_customerPath);
+        _accounts = Directory.GetFiles(_customerPath).ToList();
     }
 
     public string ToCsv() =>
