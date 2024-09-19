@@ -96,6 +96,11 @@ public class Bank
                     return false;
             }
 
+            if (input == 6 || input == 7 || input == 8)
+            {
+                continue;
+            }
+
             do
             {
                 Console.WriteLine("\nPress Enter to go back to main menu.");
