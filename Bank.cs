@@ -5,6 +5,7 @@ public class Bank
     private readonly string _path = "Accounts/credentials.csv";
     private readonly UserInputs _inputs;
     private List<string[]> _accounts = [];
+    private Customer _currentCustomer;
 
     public Bank(UserInputs inputs)
     {
@@ -12,7 +13,96 @@ public class Bank
         InitializeDatabase();
     }
 
-    public Customer LoginMenu()
+    public bool MainMenu()
+    {
+        Console.Clear();
+        ConsoleKeyInfo key;
+        decimal movement;
+
+        do
+        {
+            _currentCustomer.ChooseAccount();
+            PrintMenu();
+            int input;
+
+            do
+            {
+                Console.Write("Your menu choice -> ");
+                key = Console.ReadKey(true);
+
+                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 8 && input > 0)
+                {
+                    break;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Invalid input, try again.");
+                PrintMenu();
+
+            } while (true);
+
+            Console.Clear();
+            switch (input)
+            {
+                case 1:
+                    _currentCustomer.CurrentAccount.GetBalance();
+                    break;
+                case 2:
+                    _currentCustomer.CurrentAccount.ShowMovementHistory();
+                    break;
+                case 3:
+                    movement = _inputs.GetDecimal(
+                        "Enter the amount you want too deposit -> ",
+                        "Invalid input, try again.",
+                        0m,
+                        decimal.MaxValue);
+                    _currentCustomer.CurrentAccount.MakeMovement(movement, true);
+                    break;
+                case 4:
+                    movement = _inputs.GetDecimal(
+                        "Enter the amount you want too withdraw -> ",
+                        "Invalid input, try again.",
+                        0m,
+                        decimal.MaxValue);
+                    _currentCustomer.CurrentAccount.MakeMovement(movement, false);
+                    break;
+                case 5:
+                    movement = _inputs.GetDecimal(
+                            "Enter the amount you want too send -> ",
+                            "Invalid input, try again.",
+                            0m,
+                            decimal.MaxValue);
+                    int accountToSend = _inputs.GetInt(
+                        "Enter the account number you want to send money too -> ",
+                        "Invalid input, try again.", 1000, 10000);
+                    _currentCustomer.CurrentAccount.SendMoney(accountToSend, movement);
+                    break;
+                case 6:
+                    return true;
+                case 7:
+                    return false;
+            }
+
+            do
+            {
+                Console.WriteLine("\nPress Enter to go back to main menu.");
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Invalid input.");
+            } while (true);
+
+            Console.Clear();
+
+        } while (true);
+    }
+
+    public bool LoginMenu()
     {
         do
         {
@@ -37,7 +127,7 @@ public class Bank
                         if (key.Key == ConsoleKey.Enter)
                         {
                             Console.Clear();
-                            return CreateNewCustomer();
+                            _currentCustomer = CreateNewCustomer();
                         }
                         else if (key.Key == ConsoleKey.Escape)
                         {
@@ -64,7 +154,7 @@ public class Bank
                 if (pincode.ToString() == accountInfo[3])
                 {
                     Console.Clear();
-                    return new Customer(
+                    _currentCustomer = new Customer(
                         int.Parse(accountInfo[0]),
                         accountInfo[1],
                         accountInfo[2],
@@ -82,6 +172,17 @@ public class Bank
             } while (true);
 
         } while (true);
+    }
+
+    private void PrintMenu()
+    {
+        Console.WriteLine(@"1 -> ShowBalance
+2 -> ShowHistory
+3 -> Deposit
+4 -> Withdraw
+5 -> Transfer
+6 -> Logout
+7 -> Quit");
     }
 
     private Customer CreateNewCustomer()

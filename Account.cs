@@ -15,10 +15,8 @@ public class Account
         InitializeBalance();
     }
 
-    public void GetBalance()
-    {
+    public void GetBalance() =>
         Console.WriteLine($"Your account balance is {_balance}$");
-    }
 
     public void ShowMovementHistory()
     {
