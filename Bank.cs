@@ -15,8 +15,6 @@ public class Bank
     {
         Console.Clear();
         ConsoleKeyInfo key;
-        decimal movement;
-
         SwapAccountMenu();
 
         do
@@ -151,7 +149,9 @@ public class Bank
 
                     } while (true || !valid);
                 }
+
                 break;
+
             } while (true);
 
             if (!valid)
@@ -160,6 +160,7 @@ public class Bank
             }
 
             Console.Clear();
+
             do
             {
                 int pincode = GetPin("Enter Your pincode");
