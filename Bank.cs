@@ -22,13 +22,7 @@ public class Bank
 
         do
         {
-            Console.WriteLine(@"1 -> ShowBalance
-        2 -> ShowHistory
-        3 -> Deposit
-        4 -> Withdraw
-        5 -> Transfer
-        6 -> Logout
-        7 -> Quit");
+            PrintMenu();
             int input;
 
             do
@@ -43,6 +37,7 @@ public class Bank
 
                 Console.Clear();
                 Console.WriteLine("Invalid input, try again.");
+                PrintMenu();
 
             } while (true);
 
@@ -198,6 +193,17 @@ public class Bank
             } while (true);
 
         } while (true);
+    }
+
+    private void PrintMenu()
+    {
+        Console.WriteLine(@"1 -> ShowBalance
+2 -> ShowHistory
+3 -> Deposit
+4 -> Withdraw
+5 -> Transfer
+6 -> Logout
+7 -> Quit");
     }
 
     private Account CreateNewAccount()
