@@ -6,10 +6,12 @@ public class Account
     private string _path;
     private decimal _balance;
     private List<decimal> _movements = [];
+    private int _customerNumber;
 
     public Account(int CustomerNumber, int accountNumber)
     {
         AccountNumber = accountNumber;
+        _customerNumber = CustomerNumber;
         _path = $"Accounts/{CustomerNumber}/{AccountNumber}.txt";
 
         InitializeBalance();
@@ -63,15 +65,15 @@ public class Account
         File.AppendAllText(_path, (deposit ? $",{movement}" : $",-{movement}"));
     }
 
-    public void SendMoney(int accountNumber, decimal movement)
+    public void SendMoney(int customerNumber, int accountNumber, decimal movement)
     {
-        if (accountNumber == AccountNumber)
+        if (accountNumber == AccountNumber && customerNumber == _customerNumber)
         {
             Console.WriteLine("You can not send money to yourself...");
             return;
         }
 
-        string transferPath = $"AccountBalances/{accountNumber}.txt";
+        string transferPath = $"Accounts/{customerNumber}/{accountNumber}.txt";
         if (movement > _balance)
         {
             Console.WriteLine("You do not have enough money.");
@@ -85,7 +87,7 @@ public class Account
         }
 
         _balance -= movement;
-        _movements.Add(movement);
+        _movements.Add(decimal.Parse($"-{movement}"));
 
         File.AppendAllText(transferPath, $",{movement}");
 
@@ -97,6 +99,7 @@ public class Account
 
     private void InitializeBalance()
     {
+
         if (!File.Exists(_path))
         {
             File.AppendAllText(_path, $"{_balance}");

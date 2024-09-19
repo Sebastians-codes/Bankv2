@@ -5,6 +5,7 @@ public class Bank
     private readonly string _path = "Accounts/credentials.csv";
     private readonly UserInputs _inputs;
     private List<string[]> _accounts = [];
+
     private Customer _currentCustomer;
 
     public Bank(UserInputs inputs)
@@ -18,10 +19,15 @@ public class Bank
         Console.Clear();
         ConsoleKeyInfo key;
         decimal movement;
+        InitializeDatabase();
+
+        if (!_currentCustomer.ChooseAccount())
+        {
+            return true;
+        }
 
         do
         {
-            _currentCustomer.ChooseAccount();
             PrintMenu();
             int input;
 
@@ -30,7 +36,7 @@ public class Bank
                 Console.Write("Your menu choice -> ");
                 key = Console.ReadKey(true);
 
-                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 8 && input > 0)
+                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 9 && input > 0)
                 {
                     break;
                 }
@@ -67,19 +73,26 @@ public class Bank
                     _currentCustomer.CurrentAccount.MakeMovement(movement, false);
                     break;
                 case 5:
+                    int accountToSend = _inputs.GetInt(
+                        "Enter the costumer number you want to send money too -> ",
+                        "Invalid input, try again.", 1000, 10000);
+                    int amountToSend = _inputs.GetInt(
+                        "Enter the account number you want to send money too -> ",
+                        "Invalid input, try again.", 0, 10000);
                     movement = _inputs.GetDecimal(
                             "Enter the amount you want too send -> ",
                             "Invalid input, try again.",
                             0m,
                             decimal.MaxValue);
-                    int accountToSend = _inputs.GetInt(
-                        "Enter the account number you want to send money too -> ",
-                        "Invalid input, try again.", 1000, 10000);
-                    _currentCustomer.CurrentAccount.SendMoney(accountToSend, movement);
+                    _currentCustomer.CurrentAccount.SendMoney(accountToSend, amountToSend, movement);
                     break;
                 case 6:
-                    return true;
+                    Console.WriteLine("swap account");
+                    _currentCustomer.ChooseAccount();
+                    break;
                 case 7:
+                    return true;
+                case 8:
                     return false;
             }
 
@@ -112,6 +125,25 @@ public class Bank
 
             do
             {
+                Console.WriteLine("Press Enter to Start Login Esc Too Quit");
+                ConsoleKeyInfo key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+                else if (key.Key == ConsoleKey.Escape)
+                {
+                    return false;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Invalid input, try again.");
+
+            } while (true);
+
+            do
+            {
                 Console.Clear();
                 accountNumber = _inputs.GetInt("Enter Your Account Number -> ", "Not a valid Number try again.");
                 (valid, accountInfo) = AccountExists(accountNumber);
@@ -127,7 +159,8 @@ public class Bank
                         if (key.Key == ConsoleKey.Enter)
                         {
                             Console.Clear();
-                            _currentCustomer = CreateNewCustomer();
+                            _currentCustomer = CreateNewAccount();
+                            return true;
                         }
                         else if (key.Key == ConsoleKey.Escape)
                         {
@@ -159,6 +192,7 @@ public class Bank
                         accountInfo[1],
                         accountInfo[2],
                         int.Parse(accountInfo[3]));
+                    return true;
                 }
 
                 if (tries == 0)
@@ -181,11 +215,12 @@ public class Bank
 3 -> Deposit
 4 -> Withdraw
 5 -> Transfer
-6 -> Logout
-7 -> Quit");
+6 -> Swap Account
+7 -> Logout
+8 -> Quit");
     }
 
-    private Customer CreateNewCustomer()
+    private Customer CreateNewAccount()
     {
         do
         {
@@ -217,8 +252,9 @@ public class Bank
             int pinCode, secondAttempt;
             do
             {
-                pinCode = _inputs.GetPin("Enter a pincode for your account -> ");
-                secondAttempt = _inputs.GetPin("Enter the code again to confirm -> ");
+                pinCode = _inputs.GetPin("Enter a pincode for your account");
+                Console.Clear();
+                secondAttempt = _inputs.GetPin("Enter the code again to confirm");
 
                 if (pinCode == secondAttempt)
                 {
@@ -229,10 +265,10 @@ public class Bank
 
             } while (true);
 
-            Customer Customer = new(randomAccountNumber, firstName, lastName, pinCode);
-            File.AppendAllLines(_path, [Customer.ToCsv()]);
+            Customer newCustomer = new(randomAccountNumber, firstName, lastName, pinCode);
+            File.AppendAllLines(_path, [newCustomer.ToCsv()]);
 
-            return Customer;
+            return newCustomer;
 
         } while (true);
     }
@@ -253,7 +289,6 @@ public class Bank
     {
         if (!File.Exists(_path))
         {
-            File.Create(_path);
             return;
         }
 

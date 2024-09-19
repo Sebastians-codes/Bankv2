@@ -21,21 +21,45 @@ public class Customer
         InitializeDatabase();
     }
 
-    public void ChooseAccount()
+    public bool ChooseAccount()
     {
-        for (int i = 0; i < _accounts.Length; i++)
+        InitializeDatabase();
+
+
+        if (_accounts.Length == 0)
         {
-            Console.WriteLine(_accounts[i].Split(".")[0]);
+            do
+            {
+                Console.WriteLine("You do not have any accounts do you want to create one? y/n");
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (char.ToLowerInvariant(key.KeyChar) == 'y')
+                {
+                    CurrentAccount = new Account(CustomerNumber, 1);
+                    Console.Clear();
+                    return true;
+                }
+                if (char.ToLowerInvariant(key.KeyChar) == 'n')
+                {
+                    Console.Clear();
+                    return false;
+                }
+                Console.Clear();
+                Console.WriteLine("Invalid input, try again.");
+
+            } while (true);
         }
 
-        int max = _accounts.Length;
+        Console.WriteLine("select the account you want too use.");
+        Console.WriteLine("to make new one enter a number that you currently do not have. max is 10 accounts.");
+        int max = _accounts.Length + 1;
         int choice;
 
         do
         {
+            PrintAccounts();
             ConsoleKeyInfo key = Console.ReadKey(true);
 
-            if (int.TryParse(key.KeyChar.ToString(), out choice) && choice > 0 && choice < max)
+            if (int.TryParse(key.KeyChar.ToString(), out choice) && choice > 0 && choice < 10)
             {
                 break;
             }
@@ -44,8 +68,17 @@ public class Customer
             Console.WriteLine("Invalid input, try agian.");
 
         } while (true);
-
+        Console.Clear();
         CurrentAccount = new Account(CustomerNumber, choice);
+        return true;
+    }
+
+    private void PrintAccounts()
+    {
+        for (int i = 0; i < _accounts.Length; i++)
+        {
+            Console.WriteLine($"Account {_accounts[i].Split(".")[0].Split("/")[^1]}");
+        }
     }
 
     private void InitializeDatabase()
