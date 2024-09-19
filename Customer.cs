@@ -21,22 +21,9 @@ public class Customer
         InitializeDatabase();
     }
 
-    public bool GetAccount(int customerNumber, int accountNumber)
-    {
-        var accounts = GetAccounts();
+    public void GetAccount(int customerNumber, int accountNumber) =>
+        CurrentAccount = new Account(customerNumber, accountNumber);
 
-        foreach (var account in accounts)
-        {
-            if (account == accountNumber.ToString())
-            {
-                CurrentAccount = new Account(customerNumber, accountNumber);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     public bool CreateNewAccount(int customerNumber, int accountNumber)
     {
@@ -62,21 +49,21 @@ public class Customer
         var strs = new string[CurrentAccount.Movements.Count + 1];
         decimal sum = 0;
 
-        strs[0] = $"Your current balance is {CurrentAccount.Balance}$";
 
-        for (int i = 1; i < CurrentAccount.Movements.Count; i++)
+        for (int i = 0; i < CurrentAccount.Movements.Count; i++)
         {
             decimal currentMovement = CurrentAccount.Movements[i];
             sum += currentMovement;
             strs[i] = $"{(currentMovement < 0 ? "Withdrew " : "Deposited")} {Math.Abs(currentMovement)}$      Balance:{sum}$";
         }
+        strs[^1] = $"Your current balance is {CurrentAccount.Balance}$";
 
         strs = strs.Reverse().ToArray();
 
         return strs;
     }
 
-    private string[] GetAccounts()
+    public string[] GetAccounts()
     {
         string[] accounts = new string[_accounts.Count];
 
