@@ -27,6 +27,7 @@ public class Bank
                 (valid, accountInfo) = AccountExists(accountNumber);
                 if (!valid)
                 {
+                    Console.Clear();
                     do
                     {
                         Console.WriteLine("There was no account with that accountNumber.");
@@ -55,12 +56,14 @@ public class Bank
                 continue;
             }
 
+            Console.Clear();
             do
             {
-                int pincode = _inputs.GetPin("Enter Your pincode -> ");
+                int pincode = _inputs.GetPin("Enter Your pincode");
 
                 if (pincode.ToString() == accountInfo[3])
                 {
+                    Console.Clear();
                     return new Account(
                         int.Parse(accountInfo[0]),
                         accountInfo[1],
@@ -85,7 +88,7 @@ public class Bank
     {
         do
         {
-            int randomAccountNumber = Random.Shared.Next(0000, 100000000);
+            int randomAccountNumber = Random.Shared.Next(1000, 10000);
             foreach (var account in _accounts)
             {
                 if (account[0] == randomAccountNumber.ToString())
@@ -94,6 +97,42 @@ public class Bank
                 }
                 break;
             }
+
+            Console.Clear();
+            Console.WriteLine($"Your account number is {randomAccountNumber} Write it down you will not see it again.");
+            Console.WriteLine("Press Enter too continue or Esc to generate another account number.");
+            ConsoleKeyInfo key = Console.ReadKey(true);
+
+            if (key.Key != ConsoleKey.Enter || key.Key == ConsoleKey.Escape)
+            {
+                continue;
+            }
+
+            Console.Clear();
+            string? firstName = _inputs.GetName("Enter your firstname -> ", "Invalid input, try again.");
+            string? lastName = _inputs.GetName("Enter your lastname -> ", "Invalid input, try again.");
+            Console.Clear();
+
+            int pinCode, secondAttempt;
+            do
+            {
+                pinCode = _inputs.GetPin("Enter a pincode for your account -> ");
+                secondAttempt = _inputs.GetPin("Enter the code again to confirm -> ");
+
+                if (pinCode == secondAttempt)
+                {
+                    break;
+                }
+                Console.Clear();
+                Console.WriteLine("codes did not match try again.");
+
+            } while (true);
+
+            Account newAccount = new(randomAccountNumber, firstName, lastName, pinCode);
+            File.AppendAllLines(_path, [newAccount.ToCsv()]);
+
+            return newAccount;
+
         } while (true);
     }
 
