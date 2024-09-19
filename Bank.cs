@@ -2,7 +2,7 @@ namespace BankStorage;
 
 public class Bank
 {
-    private readonly string _path = "accounts.csv";
+    private readonly string _path = "Accounts/credentials.csv";
     private readonly UserInputs _inputs;
     private List<string[]> _accounts = [];
 
@@ -12,7 +12,7 @@ public class Bank
         InitializeDatabase();
     }
 
-    public Account LoginMenu()
+    public Customer LoginMenu()
     {
         do
         {
@@ -37,7 +37,7 @@ public class Bank
                         if (key.Key == ConsoleKey.Enter)
                         {
                             Console.Clear();
-                            return CreateNewAccount();
+                            return CreateNewCustomer();
                         }
                         else if (key.Key == ConsoleKey.Escape)
                         {
@@ -64,7 +64,7 @@ public class Bank
                 if (pincode.ToString() == accountInfo[3])
                 {
                     Console.Clear();
-                    return new Account(
+                    return new Customer(
                         int.Parse(accountInfo[0]),
                         accountInfo[1],
                         accountInfo[2],
@@ -84,7 +84,7 @@ public class Bank
         } while (true);
     }
 
-    private Account CreateNewAccount()
+    private Customer CreateNewCustomer()
     {
         do
         {
@@ -128,10 +128,10 @@ public class Bank
 
             } while (true);
 
-            Account newAccount = new(randomAccountNumber, firstName, lastName, pinCode);
-            File.AppendAllLines(_path, [newAccount.ToCsv()]);
+            Customer Customer = new(randomAccountNumber, firstName, lastName, pinCode);
+            File.AppendAllLines(_path, [Customer.ToCsv()]);
 
-            return newAccount;
+            return Customer;
 
         } while (true);
     }

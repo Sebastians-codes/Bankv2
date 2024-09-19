@@ -1,6 +1,4 @@
-using BankStorage;
-
-namespace BankStorageg;
+namespace BankStorage;
 
 public class Customer
 {
@@ -10,7 +8,7 @@ public class Customer
     public int PinCode { get; }
     public Account CurrentAccount { get; private set; }
     private string[] _accounts;
-    private string? _path;
+    private string? _customerPath;
 
     public Customer(int customerNumber, string holderFirstName, string holderLastName, int pinCode)
     {
@@ -18,27 +16,50 @@ public class Customer
         HolderFirstName = holderFirstName;
         HolderLastName = holderLastName;
         PinCode = pinCode;
-        _path = $"Accounts/{CustomerNumber}";
+        _customerPath = $"Accounts/{CustomerNumber}";
 
         InitializeDatabase();
     }
 
-    public Account ChooseAccount()
+    public void ChooseAccount()
     {
         for (int i = 0; i < _accounts.Length; i++)
         {
             Console.WriteLine(_accounts[i].Split(".")[0]);
         }
+
+        int max = _accounts.Length;
+        int choice;
+
+        do
+        {
+            ConsoleKeyInfo key = Console.ReadKey(true);
+
+            if (int.TryParse(key.KeyChar.ToString(), out choice) && choice > 0 && choice < max)
+            {
+                break;
+            }
+
+            Console.Clear();
+            Console.WriteLine("Invalid input, try agian.");
+
+        } while (true);
+
+        CurrentAccount = new Account(CustomerNumber, choice);
     }
 
     private void InitializeDatabase()
     {
-        if (!Directory.Exists(_path))
+        if (!Directory.Exists(_customerPath))
         {
-            Directory.CreateDirectory(_path);
+            Directory.CreateDirectory(_customerPath);
             return;
         }
 
-        _accounts = Directory.GetFiles(_path);
+        _accounts = Directory.GetFiles(_customerPath);
     }
+
+    public string ToCsv() =>
+        $"{CustomerNumber},{HolderFirstName},{HolderLastName},{PinCode}";
+
 }
