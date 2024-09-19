@@ -6,19 +6,133 @@ public class Bank
     private readonly UserInputs _inputs;
     private List<string[]> _accounts = [];
 
+    private Account _currentAccount;
+
     public Bank(UserInputs inputs)
     {
         _inputs = inputs;
         InitializeDatabase();
     }
 
-    public Account LoginMenu()
+    public bool MainMenu()
+    {
+        Console.Clear();
+        ConsoleKeyInfo key;
+        decimal movement;
+
+        do
+        {
+            Console.WriteLine(@"1 -> ShowBalance
+        2 -> ShowHistory
+        3 -> Deposit
+        4 -> Withdraw
+        5 -> Transfer
+        6 -> Logout
+        7 -> Quit");
+            int input;
+
+            do
+            {
+                Console.Write("Your menu choice -> ");
+                key = Console.ReadKey(true);
+
+                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 8 && input > 0)
+                {
+                    break;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Invalid input, try again.");
+
+            } while (true);
+
+            Console.Clear();
+            switch (input)
+            {
+                case 1:
+                    _currentAccount.GetBalance();
+                    break;
+                case 2:
+                    _currentAccount.ShowMovementHistory();
+                    break;
+                case 3:
+                    movement = _inputs.GetDecimal(
+                        "Enter the amount you want too deposit -> ",
+                        "Invalid input, try again.",
+                        0m,
+                        decimal.MaxValue);
+                    _currentAccount.MakeMovement(movement, true);
+                    break;
+                case 4:
+                    movement = _inputs.GetDecimal(
+                        "Enter the amount you want too withdraw -> ",
+                        "Invalid input, try again.",
+                        0m,
+                        decimal.MaxValue);
+                    _currentAccount.MakeMovement(movement, false);
+                    break;
+                case 5:
+                    movement = _inputs.GetDecimal(
+                            "Enter the amount you want too send -> ",
+                            "Invalid input, try again.",
+                            0m,
+                            decimal.MaxValue);
+                    int accountToSend = _inputs.GetInt(
+                        "Enter the account number you want to send money too -> ",
+                        "Invalid input, try again.", 1000, 10000);
+                    _currentAccount.SendMoney(accountToSend, movement);
+                    break;
+                case 6:
+                    return true;
+                case 7:
+                    return false;
+            }
+
+            do
+            {
+                Console.WriteLine("\nPress Enter to go back to main menu.");
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Invalid input.");
+            } while (true);
+
+            Console.Clear();
+
+        } while (true);
+    }
+
+    public bool LoginMenu()
     {
         do
         {
             int accountNumber, tries = 3;
             bool valid;
             string[] accountInfo;
+
+            do
+            {
+                Console.WriteLine("Press Enter to Start Login Esc Too Quit");
+                ConsoleKeyInfo key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+                else if (key.Key == ConsoleKey.Escape)
+                {
+                    return false;
+                }
+
+                Console.Clear();
+                Console.WriteLine("Invalid input, try again.");
+
+            } while (true);
 
             do
             {
@@ -37,7 +151,8 @@ public class Bank
                         if (key.Key == ConsoleKey.Enter)
                         {
                             Console.Clear();
-                            return CreateNewAccount();
+                            _currentAccount = CreateNewAccount();
+                            return true;
                         }
                         else if (key.Key == ConsoleKey.Escape)
                         {
@@ -64,11 +179,12 @@ public class Bank
                 if (pincode.ToString() == accountInfo[3])
                 {
                     Console.Clear();
-                    return new Account(
+                    _currentAccount = new Account(
                         int.Parse(accountInfo[0]),
                         accountInfo[1],
                         accountInfo[2],
                         int.Parse(accountInfo[3]));
+                    return true;
                 }
 
                 if (tries == 0)
@@ -117,6 +233,7 @@ public class Bank
             do
             {
                 pinCode = _inputs.GetPin("Enter a pincode for your account -> ");
+                Console.Clear();
                 secondAttempt = _inputs.GetPin("Enter the code again to confirm -> ");
 
                 if (pinCode == secondAttempt)
@@ -152,7 +269,6 @@ public class Bank
     {
         if (!File.Exists(_path))
         {
-            File.Create(_path);
             return;
         }
 

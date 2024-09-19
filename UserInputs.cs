@@ -25,7 +25,7 @@ public class UserInputs
         {
             Console.Write(message);
 
-            if (int.TryParse(Console.ReadKey(true).ToString(),
+            if (int.TryParse(Console.ReadLine(),
                 out int num) && num > min && num < max)
             {
                 return num;

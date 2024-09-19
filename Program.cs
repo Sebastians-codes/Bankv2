@@ -2,8 +2,14 @@
 
 Bank bank = new(new UserInputs());
 
-Account account = bank.LoginMenu();
-
-account.MakeMovement(2000, true);
-
-account.ShowMovementHistory();
+do
+{
+    if (!bank.LoginMenu())
+    {
+        break;
+    }
+    if (!bank.MainMenu())
+    {
+        break;
+    }
+} while (true);
