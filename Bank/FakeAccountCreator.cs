@@ -5,7 +5,6 @@ namespace BankStorage.Bank;
 public static class FakeAccountCreator
 {
     private static List<int> _usedCustomerNumbers = [];
-    private static List<int> _usedPhoneNumbers = [];
 
     public static void CreateFakeAccountsIfNoAccountsExist(int amount)
     {
