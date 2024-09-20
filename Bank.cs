@@ -27,7 +27,7 @@ public class Bank
                 Console.Write("Your menu choice -> ");
                 key = Console.ReadKey(true);
 
-                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 9 && input > 0)
+                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 10 && input > 0)
                 {
                     break;
                 }
@@ -57,15 +57,18 @@ public class Bank
                     SendMoney();
                     break;
                 case 6:
-                    SwapAccountMenu();
+                    CustomerInfo();
                     break;
                 case 7:
-                    return true;
+                    SwapAccountMenu();
+                    break;
                 case 8:
+                    return true;
+                case 9:
                     return false;
             }
 
-            if (input == 6 || input == 7 || input == 8)
+            if (input == 7 || input == 8 || input == 9)
             {
                 continue;
             }
@@ -165,14 +168,17 @@ public class Bank
             {
                 int pincode = GetPin("Enter Your pincode");
 
-                if (pincode.ToString() == customerInfo[3])
+                if (pincode.ToString() == customerInfo[6])
                 {
                     Console.Clear();
                     _currentCustomer = new Customer(
                         int.Parse(customerInfo[0]),
                         customerInfo[1],
                         customerInfo[2],
-                        int.Parse(customerInfo[3]));
+                        customerInfo[3],
+                        customerInfo[4],
+                        customerInfo[5],
+                        int.Parse(customerInfo[6]));
                     return true;
                 }
 
@@ -344,6 +350,9 @@ public class Bank
         Console.WriteLine($"Your Current Balance is {balance}$.");
     }
 
+    private void CustomerInfo() =>
+        Console.WriteLine(_currentCustomer.GetCustomerInfo());
+
     private void PrintMenu()
     {
         Console.WriteLine(@"1 -> ShowBalance
@@ -351,9 +360,10 @@ public class Bank
 3 -> Deposit
 4 -> Withdraw
 5 -> Transfer
-6 -> Swap Account
-7 -> Logout
-8 -> Quit");
+6 -> Account Info
+7 -> Swap Account
+8 -> Logout
+9 -> Quit");
     }
 
     private Customer CreateNewCustomer()
@@ -381,8 +391,15 @@ public class Bank
             }
 
             Console.Clear();
-            string? firstName = GetName("Enter your firstname -> ", "Invalid input, try again.");
-            string? lastName = GetName("Enter your lastname -> ", "Invalid input, try again.");
+            string? firstName = GetString("Enter your firstname -> ", "Invalid input, try again.");
+            string? lastName = GetString("Enter your lastname -> ", "Invalid input, try again.");
+            string? address = GetString("Enter your address -> ", "Invalid input, try again.");
+            string? email = GetString("Enter your email -> ", "Invalid input, try again.");
+            string? phoneNumber = GetInt(
+                "Enter your phone number -> ",
+                "Invalid Phone number, try again.",
+                0699999999,
+                0800000000).ToString();
             Console.Clear();
 
             int pinCode, secondAttempt;
@@ -408,7 +425,15 @@ public class Bank
 
             } while (true);
 
-            Customer newCustomer = new(randomAccountNumber, firstName, lastName, pinCode);
+            Customer newCustomer = new(
+                randomAccountNumber,
+                firstName,
+                lastName,
+                address,
+                email,
+                phoneNumber,
+                pinCode);
+
             File.AppendAllLines(_path, [newCustomer.ToCsv()]);
 
             return newCustomer;
@@ -484,7 +509,7 @@ public class Bank
         } while (true);
     }
 
-    private string GetName(string message, string errorMesage)
+    private string GetString(string message, string errorMesage)
     {
         do
         {

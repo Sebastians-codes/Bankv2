@@ -5,16 +5,29 @@ public class Customer
     public int CustomerNumber { get; }
     public string? HolderFirstName { get; }
     public string? HolderLastName { get; }
+    public string? Address { get; }
+    public string? Email { get; }
+    public string? PhoneNumber { get; }
     public int PinCode { get; }
     public Account CurrentAccount { get; private set; }
     private List<string> _accounts;
     private string? _customerPath;
 
-    public Customer(int customerNumber, string holderFirstName, string holderLastName, int pinCode)
+    public Customer(
+        int customerNumber,
+        string holderFirstName,
+        string holderLastName,
+        string address,
+        string email,
+        string phoneNumber,
+        int pinCode)
     {
         CustomerNumber = customerNumber;
         HolderFirstName = holderFirstName;
         HolderLastName = holderLastName;
+        Address = address;
+        Email = email;
+        PhoneNumber = phoneNumber;
         PinCode = pinCode;
         _customerPath = $"Accounts/{CustomerNumber}";
 
@@ -75,6 +88,17 @@ public class Customer
         return accounts;
     }
 
+    public string GetCustomerInfo() =>
+        @$"Name: {HolderFirstName} {HolderLastName}
+Address: {Address}
+
+Contact Info
+Email: {Email}
+PhoneNumber {PhoneNumber}";
+
+    public string ToCsv() =>
+        $"{CustomerNumber},{HolderFirstName},{HolderLastName},{Address},{Email},{PhoneNumber},{PinCode}";
+
     private void InitializeDatabase()
     {
         if (!Directory.Exists(_customerPath))
@@ -87,7 +111,5 @@ public class Customer
         _accounts = Directory.GetFiles(_customerPath).ToList();
     }
 
-    public string ToCsv() =>
-        $"{CustomerNumber},{HolderFirstName},{HolderLastName},{PinCode}";
 
 }
