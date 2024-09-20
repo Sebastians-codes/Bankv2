@@ -2,6 +2,8 @@
 
 Bank bank = new();
 
+FakeAccountCreator.CreateFakeAccountsIfNoAccountsExist(10);
+
 do
 {
     if (!bank.LoginMenu())
