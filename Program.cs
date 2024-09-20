@@ -1,6 +1,6 @@
 ﻿using BankStorage;
 
-Bank bank = new();
+Bank bank = new(new ConsoleUserInputs(), new ConsoleUserInterface());
 
 FakeAccountCreator.CreateFakeAccountsIfNoAccountsExist(10);
 

@@ -2,19 +2,23 @@ namespace BankStorage;
 
 public class Bank
 {
+    private readonly IUserInputs _inputs;
+    private readonly IUserInterface _userInterface;
     private readonly string _path = "Accounts/credentials.csv";
     private List<string[]> _accounts = [];
     private Customer _currentCustomer;
 
-    public Bank()
+    public Bank(IUserInputs inputs, IUserInterface userInterface)
     {
+        _inputs = inputs;
+        _userInterface = userInterface;
         InitializeDatabase();
     }
 
     public bool MainMenu()
     {
-        Console.Clear();
-        ConsoleKeyInfo key;
+        _userInterface.Clear();
+        char key;
         SwapAccountMenu();
 
         do
@@ -24,21 +28,21 @@ public class Bank
 
             do
             {
-                Console.Write("Your menu choice -> ");
-                key = Console.ReadKey(true);
+                _userInterface.Write("Your menu choice -> ");
+                key = _inputs.ReadKey();
 
-                if (int.TryParse(key.KeyChar.ToString(), out input) && input < 10 && input > 0)
+                if (int.TryParse(key.ToString(), out input) && input < 10 && input > 0)
                 {
                     break;
                 }
 
-                Console.Clear();
-                Console.WriteLine("Invalid input, try again.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("Invalid input, try again.");
                 PrintMenu();
 
             } while (true);
 
-            Console.Clear();
+            _userInterface.Clear();
             switch (input)
             {
                 case 1:
@@ -75,19 +79,19 @@ public class Bank
 
             do
             {
-                Console.WriteLine("\nPress Enter to go back to main menu.");
-                key = Console.ReadKey(true);
+                _userInterface.WriteLine("\nPress B to go back to main menu.");
+                key = _inputs.ReadKey();
 
-                if (key.Key == ConsoleKey.Enter)
+                if (char.ToLower(key) == 'b')
                 {
                     break;
                 }
 
-                Console.Clear();
-                Console.WriteLine("Invalid input.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("Invalid input.");
             } while (true);
 
-            Console.Clear();
+            _userInterface.Clear();
 
         } while (true);
     }
@@ -102,40 +106,41 @@ public class Bank
 
             do
             {
-                Console.WriteLine("Press Enter to Start Login Esc Too Quit");
-                ConsoleKeyInfo key = Console.ReadKey(true);
+                _userInterface.WriteLine("Press S to Start Login Q Too Quit");
+                char key = _inputs.ReadKey();
 
-                if (key.Key == ConsoleKey.Enter)
+                if (char.ToLower(key) == 's')
                 {
                     break;
                 }
-                else if (key.Key == ConsoleKey.Escape)
+                else if (char.ToLower(key) == 'q')
                 {
                     return false;
                 }
 
-                Console.Clear();
-                Console.WriteLine("Invalid input, try again.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("Invalid input, try again.");
 
             } while (true);
 
             do
             {
-                Console.Clear();
+                _userInterface.Clear();
                 accountNumber = GetInt("Enter Your Customer Number -> ", "Not a valid Number try again.");
                 (valid, customerInfo) = CustomerExists(accountNumber);
                 if (!valid)
                 {
-                    Console.Clear();
+                    _userInterface.Clear();
                     do
                     {
-                        Console.WriteLine("There was no account with that Customer Number.");
-                        Console.WriteLine("Do you wanna try again or Open a new account?");
-                        Console.WriteLine("Press Enter to create a new account or Esc too try again.");
-                        ConsoleKeyInfo key = Console.ReadKey(true);
-                        if (key.Key == ConsoleKey.Enter)
+                        _userInterface.WriteLine("There was no account with that Customer Number.");
+                        _userInterface.WriteLine("Do you wanna try again or Open a new account?");
+                        _userInterface.WriteLine("Press N to create a new account or Q too try again.");
+                        char key = _inputs.ReadKey();
+
+                        if (char.ToLower(key) == 'n')
                         {
-                            Console.Clear();
+                            _userInterface.Clear();
                             _currentCustomer = CreateNewCustomer();
 
                             _accounts.Add(_currentCustomer.ToCsv().Split(","));
@@ -143,12 +148,13 @@ public class Bank
 
                             return true;
                         }
-                        else if (key.Key == ConsoleKey.Escape)
+                        else if (char.ToLower(key) == 'q')
                         {
                             break;
                         }
-                        Console.Clear();
-                        Console.WriteLine("Invalid input try again.");
+
+                        _userInterface.Clear();
+                        _userInterface.WriteLine("Invalid input try again.");
 
                     } while (true || !valid);
                 }
@@ -162,7 +168,7 @@ public class Bank
                 continue;
             }
 
-            Console.Clear();
+            _userInterface.Clear();
 
             do
             {
@@ -170,7 +176,7 @@ public class Bank
 
                 if (pincode.ToString() == customerInfo[6])
                 {
-                    Console.Clear();
+                    _userInterface.Clear();
                     _currentCustomer = new Customer(
                         int.Parse(customerInfo[0]),
                         customerInfo[1],
@@ -187,8 +193,8 @@ public class Bank
                     break;
                 }
 
-                Console.Clear();
-                Console.WriteLine($"Invalid pincode. You have {--tries} left.");
+                _userInterface.Clear();
+                _userInterface.WriteLine($"Invalid pincode. You have {--tries} left.");
 
             } while (true);
 
@@ -205,7 +211,7 @@ public class Bank
             return;
         }
 
-        ConsoleKeyInfo key;
+        char key;
         do
         {
             int choice;
@@ -214,24 +220,24 @@ public class Bank
             {
                 foreach (var account in _currentCustomer.GetAccounts())
                 {
-                    Console.WriteLine(account);
+                    _userInterface.WriteLine(account);
                 }
 
-                Console.Write("Enter the Id of the account you want to log in too.\n" +
+                _userInterface.Write("Enter the Id of the account you want to log in too.\n" +
                 "Or Press n too create a new account.");
-                key = Console.ReadKey(true);
+                key = _inputs.ReadKey();
 
-                if (int.TryParse(key.KeyChar.ToString(), out choice) &&
+                if (int.TryParse(key.ToString(), out choice) &&
                     choice > 0 && choice < availableAccounts.Length + 1)
                 {
                     break;
                 }
-                else if (key.KeyChar == 'n')
+                else if (key == 'n')
                 {
                     if (availableAccounts.Length < 10)
                     {
                         _currentCustomer.CreateNewAccount(_currentCustomer.CustomerNumber, availableAccounts.Length + 1);
-                        Console.Clear();
+                        _userInterface.Clear();
                         return;
                     }
                 }
@@ -239,7 +245,7 @@ public class Bank
             } while (true);
 
             _currentCustomer.GetAccount(_currentCustomer.CustomerNumber, choice);
-            Console.Clear();
+            _userInterface.Clear();
             return;
 
         } while (true);
@@ -259,8 +265,8 @@ public class Bank
 
             if (!valid)
             {
-                Console.Clear();
-                Console.WriteLine("There is no account with that account number.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("There is no account with that account number.");
                 return;
             }
 
@@ -270,15 +276,15 @@ public class Bank
 
             if (!File.Exists($"Accounts/{customerToSend}/{accountToSend}.txt"))
             {
-                Console.Clear();
-                Console.WriteLine($"Customer {customerToSend} does not have an account with number {accountToSend}.");
+                _userInterface.Clear();
+                _userInterface.WriteLine($"Customer {customerToSend} does not have an account with number {accountToSend}.");
                 return;
             }
             else if (_currentCustomer.CustomerNumber == customerToSend &&
                 accountToSend == _currentCustomer.CurrentAccount.AccountNumber)
             {
-                Console.Clear();
-                Console.Write("You can not send money to the same account your logged in too.");
+                _userInterface.Clear();
+                _userInterface.Write("You can not send money to the same account your logged in too.");
                 return;
             }
 
@@ -290,9 +296,9 @@ public class Bank
 
             if (movement > _currentCustomer.CurrentAccount.Balance)
             {
-                Console.Clear();
-                Console.WriteLine($"You dont have enough money to send {movement}$.");
-                Console.WriteLine($"Your current balance is: {_currentCustomer.CurrentAccount.Balance}$.");
+                _userInterface.Clear();
+                _userInterface.WriteLine($"You dont have enough money to send {movement}$.");
+                _userInterface.WriteLine($"Your current balance is: {_currentCustomer.CurrentAccount.Balance}$.");
                 continue;
             }
 
@@ -315,11 +321,11 @@ public class Bank
             if (movement < _currentCustomer.CurrentAccount.Balance)
             {
                 _currentCustomer.CurrentAccount.Withdraw(movement);
-                Console.WriteLine($"You withdrew {movement}$.");
+                _userInterface.WriteLine($"You withdrew {movement}$.");
                 return;
             }
-            Console.Clear();
-            Console.WriteLine("You do not have enough money to withdraw that amount");
+            _userInterface.Clear();
+            _userInterface.WriteLine("You do not have enough money to withdraw that amount");
 
         } while (true);
     }
@@ -340,22 +346,22 @@ public class Bank
         string[] movements = _currentCustomer.GetMovementHistory();
         foreach (string movement in movements)
         {
-            Console.WriteLine(movement);
+            _userInterface.WriteLine(movement);
         }
     }
 
     private void PrintBalance()
     {
         decimal balance = _currentCustomer.CurrentAccount.Balance;
-        Console.WriteLine($"Your Current Balance is {balance}$.");
+        _userInterface.WriteLine($"Your Current Balance is {balance}$.");
     }
 
     private void CustomerInfo() =>
-        Console.WriteLine(_currentCustomer.GetCustomerInfo());
+        _userInterface.WriteLine(_currentCustomer.GetCustomerInfo());
 
     private void PrintMenu()
     {
-        Console.WriteLine(@"1 -> ShowBalance
+        _userInterface.WriteLine(@"1 -> ShowBalance
 2 -> ShowHistory
 3 -> Deposit
 4 -> Withdraw
@@ -380,17 +386,17 @@ public class Bank
                 break;
             }
 
-            Console.Clear();
-            Console.WriteLine($"Your account number is {randomAccountNumber} Write it down you will not see it again.");
-            Console.WriteLine("Press Enter too continue or Esc to generate another account number.");
-            ConsoleKeyInfo key = Console.ReadKey(true);
+            _userInterface.Clear();
+            _userInterface.WriteLine($"Your account number is {randomAccountNumber} Write it down you will not see it again.");
+            _userInterface.WriteLine("Press N too continue or R to generate another account number.");
+            char key = _inputs.ReadKey();
 
-            if (key.Key != ConsoleKey.Enter || key.Key == ConsoleKey.Escape)
+            if (char.ToLower(key) != 'n' || char.ToLower(key) == 'r')
             {
                 continue;
             }
 
-            Console.Clear();
+            _userInterface.Clear();
             string? firstName = GetString("Enter your firstname -> ", "Invalid input, try again.");
             string? lastName = GetString("Enter your lastname -> ", "Invalid input, try again.");
             string? address = GetString("Enter your address -> ", "Invalid input, try again.");
@@ -400,7 +406,7 @@ public class Bank
                 "Invalid Phone number, try again.",
                 0699999999,
                 0800000000).ToString();
-            Console.Clear();
+            _userInterface.Clear();
 
             int pinCode, secondAttempt;
             do
@@ -408,7 +414,7 @@ public class Bank
                 pinCode = GetPin("Enter a pincode for your account");
                 do
                 {
-                    Console.Clear();
+                    _userInterface.Clear();
                     secondAttempt = GetPin("Enter the code again to confirm");
 
                     break;
@@ -420,8 +426,8 @@ public class Bank
                     break;
                 }
 
-                Console.Clear();
-                Console.WriteLine("codes did not match try again.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("codes did not match try again.");
 
             } while (true);
 
@@ -479,14 +485,14 @@ public class Bank
     {
         do
         {
-            Console.Write(message);
-            if (int.TryParse(Console.ReadLine(),
+            _userInterface.Write(message);
+            if (int.TryParse(_inputs.ReadLine(),
                 out int num) && num > min && num < max)
             {
                 return num;
             }
-            Console.Clear();
-            Console.WriteLine(errorMesage);
+            _userInterface.Clear();
+            _userInterface.WriteLine(errorMesage);
         } while (true);
     }
 
@@ -495,16 +501,16 @@ public class Bank
     {
         do
         {
-            Console.Write(message);
+            _userInterface.Write(message);
 
-            if (int.TryParse(Console.ReadLine(),
+            if (int.TryParse(_inputs.ReadLine(),
                 out int num) && num > min && num < max)
             {
                 return num;
             }
 
-            Console.Clear();
-            Console.WriteLine(errorMesage);
+            _userInterface.Clear();
+            _userInterface.WriteLine(errorMesage);
 
         } while (true);
     }
@@ -513,9 +519,9 @@ public class Bank
     {
         do
         {
-            Console.Clear();
-            Console.Write(message);
-            string? input = Console.ReadLine();
+            _userInterface.Clear();
+            _userInterface.Write(message);
+            string? input = _inputs.ReadLine();
 
             if (!string.IsNullOrWhiteSpace(input) && input.Trim().Length > 1)
             {
@@ -542,44 +548,45 @@ public class Bank
 
         do
         {
-            Console.Write($"{message}, between {minLength} and {maxLength} long. -> ");
+            _userInterface.Write($"{message}, between {minLength} and {maxLength} long. -> ");
 
             if (chars.Count() > 0)
             {
                 foreach (char chr in chars)
                 {
-                    Console.Write("*");
+                    _userInterface.Write("*");
                 }
             }
 
             key = Console.ReadKey(true);
 
-            if (key.Key == ConsoleKey.Enter && chars.Count > minLength - 1)
+            // Must find a solution to this if i dont have ConsoleKeyInfo
+            if (!char.IsAsciiDigit(key.KeyChar) && chars.Count > minLength - 1)
             {
                 break;
             }
             else if (key.Key == ConsoleKey.Backspace && chars.Count > 0)
             {
                 chars.RemoveAt(chars.LastIndexOf(chars.Last()));
-                Console.Clear();
+                _userInterface.Clear();
                 continue;
             }
 
             if (int.TryParse(key.KeyChar.ToString(), out int num) && num < 10 && num > 0 && chars.Count < maxLength)
             {
                 chars.Add(key.KeyChar);
-                Console.Clear();
+                _userInterface.Clear();
                 continue;
             }
             else if (chars.Count == maxLength)
             {
-                Console.Clear();
-                Console.WriteLine("You have reached the maximum amount of numbers.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("You have reached the maximum amount of numbers.");
             }
             else
             {
-                Console.Clear();
-                Console.WriteLine("Not a valid integer try again.");
+                _userInterface.Clear();
+                _userInterface.WriteLine("Not a valid integer try again.");
             }
 
         } while (true);
