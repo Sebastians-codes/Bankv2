@@ -2,20 +2,35 @@ namespace BankStorage;
 
 public class Bank
 {
-    private readonly IUserInputs _inputs;
+    private readonly IUserInteractions _inputs;
     private readonly IUserInterface _userInterface;
     private readonly string _path = "Accounts/credentials.csv";
     private List<string[]> _accounts = [];
     private Customer _currentCustomer;
 
-    public Bank(IUserInputs inputs, IUserInterface userInterface)
+    public Bank(IUserInteractions inputs, IUserInterface userInterface)
     {
         _inputs = inputs;
         _userInterface = userInterface;
         InitializeDatabase();
     }
 
-    public bool MainMenu()
+    public void Run()
+    {
+        do
+        {
+            if (!LoginMenu())
+            {
+                break;
+            }
+            if (!MainMenu())
+            {
+                break;
+            }
+        } while (true);
+    }
+
+    private bool MainMenu()
     {
         _userInterface.Clear();
         char key;
@@ -96,7 +111,7 @@ public class Bank
         } while (true);
     }
 
-    public bool LoginMenu()
+    private bool LoginMenu()
     {
         do
         {

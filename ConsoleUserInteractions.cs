@@ -1,6 +1,6 @@
 namespace BankStorage;
 
-public class ConsoleUserInputs : IUserInputs
+public class ConsoleUserInteractions : IUserInteractions
 {
     public char ReadKey() =>
         Console.ReadKey(true).KeyChar;

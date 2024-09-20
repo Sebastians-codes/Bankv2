@@ -1,6 +1,6 @@
 namespace BankStorage;
 
-public interface IUserInputs
+public interface IUserInteractions
 {
     char ReadKey();
     string ReadLine();
