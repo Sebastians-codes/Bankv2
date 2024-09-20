@@ -2,7 +2,7 @@ namespace BankStorage;
 
 public class Bank
 {
-    private readonly IUserInteractions _inputs;
+    private readonly IUserInteractions _userInteractions;
     private readonly IUserInterface _userInterface;
     private readonly string _path = "Accounts/credentials.csv";
     private List<string[]> _accounts = [];
@@ -10,7 +10,7 @@ public class Bank
 
     public Bank(IUserInteractions inputs, IUserInterface userInterface)
     {
-        _inputs = inputs;
+        _userInteractions = inputs;
         _userInterface = userInterface;
         InitializeDatabase();
     }
@@ -44,7 +44,7 @@ public class Bank
             do
             {
                 _userInterface.Write("Your menu choice -> ");
-                key = _inputs.ReadKey();
+                key = _userInteractions.ReadKey();
 
                 if (int.TryParse(key.ToString(), out input) && input < 10 && input > 0)
                 {
@@ -95,7 +95,7 @@ public class Bank
             do
             {
                 _userInterface.WriteLine("\nPress B to go back to main menu.");
-                key = _inputs.ReadKey();
+                key = _userInteractions.ReadKey();
 
                 if (char.ToLower(key) == 'b')
                 {
@@ -122,7 +122,7 @@ public class Bank
             do
             {
                 _userInterface.WriteLine("Press S to Start Login Q Too Quit");
-                char key = _inputs.ReadKey();
+                char key = _userInteractions.ReadKey();
 
                 if (char.ToLower(key) == 's')
                 {
@@ -151,7 +151,7 @@ public class Bank
                         _userInterface.WriteLine("There was no account with that Customer Number.");
                         _userInterface.WriteLine("Do you wanna try again or Open a new account?");
                         _userInterface.WriteLine("Press N to create a new account or Q too try again.");
-                        char key = _inputs.ReadKey();
+                        char key = _userInteractions.ReadKey();
 
                         if (char.ToLower(key) == 'n')
                         {
@@ -240,7 +240,7 @@ public class Bank
 
                 _userInterface.Write("Enter the Id of the account you want to log in too.\n" +
                 "Or Press n too create a new account.");
-                key = _inputs.ReadKey();
+                key = _userInteractions.ReadKey();
 
                 if (int.TryParse(key.ToString(), out choice) &&
                     choice > 0 && choice < availableAccounts.Length + 1)
@@ -404,7 +404,7 @@ public class Bank
             _userInterface.Clear();
             _userInterface.WriteLine($"Your account number is {randomAccountNumber} Write it down you will not see it again.");
             _userInterface.WriteLine("Press N too continue or R to generate another account number.");
-            char key = _inputs.ReadKey();
+            char key = _userInteractions.ReadKey();
 
             if (char.ToLower(key) != 'n' || char.ToLower(key) == 'r')
             {
@@ -501,7 +501,7 @@ public class Bank
         do
         {
             _userInterface.Write(message);
-            if (int.TryParse(_inputs.ReadLine(),
+            if (int.TryParse(_userInteractions.ReadLine(),
                 out int num) && num > min && num < max)
             {
                 return num;
@@ -518,7 +518,7 @@ public class Bank
         {
             _userInterface.Write(message);
 
-            if (int.TryParse(_inputs.ReadLine(),
+            if (int.TryParse(_userInteractions.ReadLine(),
                 out int num) && num > min && num < max)
             {
                 return num;
@@ -536,7 +536,7 @@ public class Bank
         {
             _userInterface.Clear();
             _userInterface.Write(message);
-            string? input = _inputs.ReadLine();
+            string? input = _userInteractions.ReadLine();
 
             if (!string.IsNullOrWhiteSpace(input) && input.Trim().Length > 1)
             {
@@ -558,11 +558,12 @@ public class Bank
 
     private int GetPin(string message, int minLength = 4, int maxLength = 8)
     {
-        ConsoleKeyInfo key;
+        char key;
         List<char> chars = [];
 
         do
         {
+            _userInterface.WriteLine("dash \"-\" to erase.");
             _userInterface.Write($"{message}, between {minLength} and {maxLength} long. -> ");
 
             if (chars.Count() > 0)
@@ -573,23 +574,22 @@ public class Bank
                 }
             }
 
-            key = Console.ReadKey(true);
+            key = _userInteractions.ReadKey();
 
-            // Must find a solution to this if i dont have ConsoleKeyInfo
-            if (!char.IsAsciiDigit(key.KeyChar) && chars.Count > minLength - 1)
+            if (!char.IsAsciiDigit(key) && chars.Count > minLength - 1)
             {
                 break;
             }
-            else if (key.Key == ConsoleKey.Backspace && chars.Count > 0)
+            else if (key == '-' && chars.Count > 0)
             {
                 chars.RemoveAt(chars.LastIndexOf(chars.Last()));
                 _userInterface.Clear();
                 continue;
             }
 
-            if (int.TryParse(key.KeyChar.ToString(), out int num) && num < 10 && num > 0 && chars.Count < maxLength)
+            if (int.TryParse(key.ToString(), out int num) && num < 10 && num > 0 && chars.Count < maxLength)
             {
-                chars.Add(key.KeyChar);
+                chars.Add(key);
                 _userInterface.Clear();
                 continue;
             }
