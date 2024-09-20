@@ -13,7 +13,7 @@ internal class Customer
     private List<string> _accounts;
     private string? _customerPath;
 
-    internal protected Customer(
+    internal Customer(
         int customerNumber,
         string holderFirstName,
         string holderLastName,
