@@ -576,15 +576,15 @@ public class Bank
 
             key = _userInteractions.ReadKey();
 
-            if (!char.IsAsciiDigit(key) && chars.Count > minLength - 1)
-            {
-                break;
-            }
-            else if (key == '-' && chars.Count > 0)
+            if (key == '-' && chars.Count > 0)
             {
                 chars.RemoveAt(chars.LastIndexOf(chars.Last()));
                 _userInterface.Clear();
                 continue;
+            }
+            else if (!char.IsAsciiDigit(key) && chars.Count > minLength - 1 && key != '-')
+            {
+                break;
             }
 
             if (int.TryParse(key.ToString(), out int num) && num < 10 && num > 0 && chars.Count < maxLength)
