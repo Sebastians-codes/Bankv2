@@ -1,4 +1,4 @@
-namespace BankStorage;
+namespace BankStorage.Interface;
 
 public class ConsoleUserInterface : IUserInterface
 {

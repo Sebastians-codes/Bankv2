@@ -1,13 +1,13 @@
-namespace BankStorage;
+namespace BankStorage.Bank;
 
-public class Account
+internal class Account
 {
-    public int AccountNumber { get; }
-    public decimal Balance { get; private set; }
-    public List<decimal> Movements { get; private set; } = [];
+    internal int AccountNumber { get; }
+    internal decimal Balance { get; private set; }
+    internal List<decimal> Movements { get; private set; } = [];
     private string _path;
 
-    public Account(int CustomerNumber, int accountNumber)
+    internal Account(int CustomerNumber, int accountNumber)
     {
         AccountNumber = accountNumber;
         _path = $"Accounts/{CustomerNumber}/{AccountNumber}.txt";
@@ -15,21 +15,21 @@ public class Account
         InitializeBalance();
     }
 
-    public void Deposit(decimal movement)
+    internal void Deposit(decimal movement)
     {
         Balance += movement;
         Movements.Add(movement);
         File.AppendAllText(_path, $",{movement}");
     }
 
-    public void Withdraw(decimal movement)
+    internal void Withdraw(decimal movement)
     {
         Balance -= movement;
         Movements.Add(decimal.Parse($"-{movement}"));
         File.AppendAllText(_path, $",-{movement}");
     }
 
-    public void SendMoney(int customerNumber, int accountNumber, decimal movement)
+    internal void SendMoney(int customerNumber, int accountNumber, decimal movement)
     {
         string transferPath = $"Accounts/{customerNumber}/{accountNumber}.txt";
 
@@ -41,7 +41,7 @@ public class Account
         File.AppendAllText(_path, $",-{movement}");
     }
 
-    public string ToCsv() =>
+    internal string ToCsv() =>
         $"{AccountNumber}";
 
     private void InitializeBalance()

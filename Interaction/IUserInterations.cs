@@ -1,4 +1,4 @@
-namespace BankStorage;
+namespace BankStorage.Interaction;
 
 public interface IUserInteractions
 {

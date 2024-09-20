@@ -1,19 +1,19 @@
-namespace BankStorage;
+namespace BankStorage.Bank;
 
-public class Customer
+internal class Customer
 {
-    public int CustomerNumber { get; }
-    public string? HolderFirstName { get; }
-    public string? HolderLastName { get; }
-    public string? Address { get; }
-    public string? Email { get; }
-    public string? PhoneNumber { get; }
-    public int PinCode { get; }
-    public Account CurrentAccount { get; private set; }
+    internal int CustomerNumber { get; }
+    internal string? HolderFirstName { get; }
+    internal string? HolderLastName { get; }
+    internal string? Address { get; }
+    internal string? Email { get; }
+    internal string? PhoneNumber { get; }
+    internal int PinCode { get; }
+    internal Account CurrentAccount { get; private set; }
     private List<string> _accounts;
     private string? _customerPath;
 
-    public Customer(
+    internal protected Customer(
         int customerNumber,
         string holderFirstName,
         string holderLastName,
@@ -34,11 +34,11 @@ public class Customer
         InitializeDatabase();
     }
 
-    public void GetAccount(int customerNumber, int accountNumber) =>
+    internal void GetAccount(int customerNumber, int accountNumber) =>
         CurrentAccount = new Account(customerNumber, accountNumber);
 
 
-    public bool CreateNewAccount(int customerNumber, int accountNumber)
+    internal bool CreateNewAccount(int customerNumber, int accountNumber)
     {
         var accounts = GetAccounts();
 
@@ -57,7 +57,7 @@ public class Customer
         return true;
     }
 
-    public string[] GetMovementHistory()
+    internal string[] GetMovementHistory()
     {
         var strs = new string[CurrentAccount.Movements.Count + 1];
         decimal sum = 0;
@@ -76,7 +76,7 @@ public class Customer
         return strs;
     }
 
-    public string[] GetAccounts()
+    internal string[] GetAccounts()
     {
         string[] accounts = new string[_accounts.Count];
 
@@ -88,7 +88,7 @@ public class Customer
         return accounts;
     }
 
-    public string GetCustomerInfo() =>
+    internal string GetCustomerInfo() =>
         @$"Name: {HolderFirstName} {HolderLastName}
 Address: {Address}
 
@@ -96,7 +96,7 @@ Contact Info
 Email: {Email}
 PhoneNumber {PhoneNumber}";
 
-    public string ToCsv() =>
+    internal string ToCsv() =>
         $"{CustomerNumber},{HolderFirstName},{HolderLastName},{Address},{Email},{PhoneNumber},{PinCode}";
 
     private void InitializeDatabase()

@@ -1,4 +1,7 @@
-namespace BankStorage;
+using BankStorage.Interaction;
+using BankStorage.Interface;
+
+namespace BankStorage.Bank;
 
 public class Bank
 {
@@ -159,8 +162,6 @@ public class Bank
                             _currentCustomer = CreateNewCustomer();
 
                             _accounts.Add(_currentCustomer.ToCsv().Split(","));
-                            File.AppendAllLines(_path, [_currentCustomer.ToCsv()]);
-
                             return true;
                         }
                         else if (char.ToLower(key) == 'q')

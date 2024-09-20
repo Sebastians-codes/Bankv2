@@ -1,6 +1,6 @@
 using Faker;
 
-namespace BankStorage;
+namespace BankStorage.Bank;
 
 public static class FakeAccountCreator
 {
