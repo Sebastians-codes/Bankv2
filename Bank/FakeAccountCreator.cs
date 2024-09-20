@@ -55,6 +55,8 @@ public static class FakeAccountCreator
             phoneNumber,
             pinCode);
 
+        cust.CreateNewAccount(customerNumber, 1);
+
         File.AppendAllLines("Accounts/credentials.csv", [cust.ToCsv()]);
     }
 

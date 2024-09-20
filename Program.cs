@@ -2,8 +2,8 @@
 using BankStorage.Interaction;
 using BankStorage.Interface;
 
-Bank bank = new(new ConsoleUserInteractions(), new ConsoleUserInterface());
-
 FakeAccountCreator.CreateFakeAccountsIfNoAccountsExist(10);
+
+Bank bank = new(new ConsoleUserInteractions(), new ConsoleUserInterface());
 
 bank.Run();
