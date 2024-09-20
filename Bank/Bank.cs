@@ -275,7 +275,7 @@ public class Bank
         {
             customerToSend = GetInt(
                             "Enter the costumer number you want to send money too -> ",
-                            "Invalid input, try again.", 1000, 10000);
+                            "Invalid input, try again.", 1000, 100000000);
 
             (bool valid, _) = CustomerExists(customerToSend);
 
