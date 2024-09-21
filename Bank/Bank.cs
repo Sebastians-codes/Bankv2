@@ -588,7 +588,7 @@ public class Bank
                 break;
             }
 
-            if (int.TryParse(key.ToString(), out int num) && num < 10 && num > 0 && chars.Count < maxLength)
+            if (int.TryParse(key.ToString(), out int num) && num < 10 && num >= 0 && chars.Count < maxLength)
             {
                 chars.Add(key);
                 _userInterface.Clear();
